@@ -1,0 +1,38 @@
+version: '1.0'
+
+steps:
+
+  build_image:
+    title: 'Build image'
+    type: build
+    image_name: marcinwyszynski/statefully
+
+  rubocop: &test_step
+    title: 'Run Rubocop'
+    image: ${{build_image}}
+    commands:
+      - bundle exec rubocop
+
+  reek:
+    <<: *test_step
+    title: 'Run Reek'
+    commands:
+      - bundle exec reek
+
+  rspec:
+    <<: *test_step
+    title: 'Run RSpec'
+    commands:
+      - bundle exec rspec
+
+  closing_comments:
+    <<: *test_step
+    title: 'Cehck for closing comments'
+    commands:
+      - bundle exec closing_comments
+
+  version:
+    <<: *test_step
+    title: 'Ensure version bump'
+    commands:
+      - bundle exec ensure_version_bump statefully

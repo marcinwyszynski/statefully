@@ -16,6 +16,7 @@ module Statefully
     describe 'methods delegated to the underlying Hash' do
       it { expect(subject.keys).to eq [:old_key] }
       it { expect(subject.key?(:old_key)).to be_truthy }
+      it { expect(subject.any? { |_, value| value == val }).to be_truthy }
     end # describe 'methods delegated to the underlying Hash'
 
     describe "methods dynamically dispatched using 'method_missing'" do
@@ -31,6 +32,7 @@ module Statefully
     describe 'trivial readers' do
       it { expect(subject.resolve).to eq subject }
       it { expect(subject).to be_success }
+      it { expect(subject).not_to be_failure }
     end # describe 'trivial readers'
 
     describe '#succeed' do
@@ -58,6 +60,7 @@ module Statefully
       let(:failed) { subject.fail(error) }
 
       it { expect(failed).not_to be_success }
+      it { expect(failed).to be_failure }
       it { expect(failed.old_key).to eq val }
       it { expect(failed.previous).to eq subject }
       it { expect(failed.error).to eq error }

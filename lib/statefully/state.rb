@@ -3,10 +3,11 @@ require 'singleton'
 
 module Statefully
   class State
+    include Enumerable
     extend Forwardable
 
     attr_reader :previous
-    def_delegators :@_members, :key?, :keys, :fetch
+    def_delegators :@_members, :each, :key?, :keys, :fetch
 
     def self.create(**values)
       Success.send(:new, values, previous: None.instance).freeze
@@ -22,6 +23,10 @@ module Statefully
 
     def success?
       true
+    end
+
+    def failure?
+      !success?
     end
 
     def resolve

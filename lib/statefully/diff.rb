@@ -57,7 +57,7 @@ module Statefully
       end
 
       def changed
-        false
+        {}
       end
 
       def inspect

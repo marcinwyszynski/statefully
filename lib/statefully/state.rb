@@ -29,12 +29,16 @@ module Statefully
       !success?
     end
 
+    def finished?
+      false
+    end
+
     def resolve
       self
     end
 
     def inspect
-      inspect_details({})
+      _inspect_details({})
     end
 
     private
@@ -47,7 +51,7 @@ module Statefully
     end
     private_class_method :new
 
-    def inspect_details(extras)
+    def _inspect_details(extras)
       details = [self.class.name]
       fields = _members.merge(extras)
       details << Inspect.from_fields(fields) unless fields.empty?
@@ -74,6 +78,15 @@ module Statefully
       key?(name.to_sym) || %w[? !].any?(&str_name.method(:end_with?)) || super
     end
 
+    class Missing < RuntimeError
+      attr_reader :field
+
+      def initialize(field)
+        @field = field
+        super("field '#{field}' missing from state")
+      end
+    end # class Missing
+
     class None < State
       include Singleton
 
@@ -93,14 +106,15 @@ module Statefully
     # Success is a not-yet failed State.
     class Success < State
       def succeed(**values)
-        self
-          .class
-          .send(:new, _members.merge(values).freeze, previous: self)
-          .freeze
+        self.class.send(:new, _members.merge(values).freeze, previous: self)
       end
 
       def fail(error)
         Failure.send(:new, _members, error, previous: self).freeze
+      end
+
+      def finish
+        Finished.send(:new, _members, previous: self).freeze
       end
     end # class Success
     private_constant :Success
@@ -127,18 +141,21 @@ module Statefully
       end
 
       def inspect
-        inspect_details(error: error.inspect)
+        _inspect_details(error: error.inspect)
       end
     end # class Failure
+    private_constant :Failure
 
-    class Missing < RuntimeError
-      attr_reader :field
-
-      def initialize(field)
-        @field = field
-        super("field '#{field}' missing from state")
+    class Finished < State
+      def diff
+        :finished
       end
-    end # class Missing
+
+      def finished?
+        true
+      end
+    end # class Finished
+    private_constant :Finished
 
     module Inspect
       def from_fields(input)

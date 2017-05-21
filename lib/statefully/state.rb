@@ -21,12 +21,12 @@ module Statefully
       ([diff] + previous.history).freeze
     end
 
-    def success?
+    def successful?
       true
     end
 
-    def failure?
-      !success?
+    def failed?
+      !successful?
     end
 
     def finished?
@@ -129,10 +129,10 @@ module Statefully
       end
 
       def diff
-        error
+        Diff::Failed.new(error).freeze
       end
 
-      def success?
+      def successful?
         false
       end
 
@@ -146,9 +146,12 @@ module Statefully
     end # class Failure
     private_constant :Failure
 
+    # Finished state is a state which is successful, but should not be processed
+    # any further. This could be useful for things like early returns.
     class Finished < State
+      # This method reeks of :reek:UtilityFunction - just implementing an API.
       def diff
-        :finished
+        Diff::Finished.instance
       end
 
       def finished?
@@ -156,13 +159,5 @@ module Statefully
       end
     end # class Finished
     private_constant :Finished
-
-    module Inspect
-      def from_fields(input)
-        input.map { |key, val| "#{key}=#{val.inspect}" }.join(', ')
-      end
-      module_function :from_fields
-    end # module Inspect
-    private_constant :Inspect
   end # class State
 end # module Statefully

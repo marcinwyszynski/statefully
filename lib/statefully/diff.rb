@@ -2,52 +2,55 @@ require 'set'
 require 'singleton'
 
 module Statefully
-  class Diff
-    attr_reader :added, :changed
-
-    def self.create(current, previous)
+  module Diff
+    # This method reeks of :reek:FeatureEnvy (of current).
+    def create(current, previous)
+      return current.diff if current.failed? || current.finished?
       changes = Builder.new(current, previous).build
-      changes.empty? ? None.instance : new(**changes).freeze
+      changes.empty? ? Unchanged.instance : Changed.new(**changes).freeze
     end
+    module_function :create
 
-    def empty?
-      false
-    end
+    class Changed
+      attr_reader :added, :changed
 
-    def inspect
-      "<#{self.class.name} #{inspect_details}>"
-    end
+      def empty?
+        false
+      end
 
-    def added?(key)
-      added.key?(key)
-    end
+      def inspect
+        "#<#{self.class.name} #{inspect_details}>"
+      end
 
-    def changed?(key)
-      changed.key?(key)
-    end
+      def added?(key)
+        added.key?(key)
+      end
 
-    private
+      def changed?(key)
+        changed.key?(key)
+      end
 
-    def inspect_details
-      [inspect_added, inspect_changed].compact.join(', ')
-    end
+      private
 
-    def inspect_added
-      added.empty? ? nil : "added=#{Inspect.from_hash(added)}"
-    end
+      def inspect_details
+        [inspect_added, inspect_changed].compact.join(', ')
+      end
 
-    def inspect_changed
-      changed.empty? ? nil : "changed=#{Inspect.from_hash(changed)}"
-    end
+      def inspect_added
+        added.empty? ? nil : "added=#{Inspect.from_hash(added)}"
+      end
 
-    def initialize(added:, changed:)
-      @added = added.freeze
-      @changed = changed.freeze
-    end
+      def inspect_changed
+        changed.empty? ? nil : "changed=#{Inspect.from_hash(changed)}"
+      end
 
-    class None
-      include Singleton
+      def initialize(added:, changed:)
+        @added = added.freeze
+        @changed = changed.freeze
+      end
+    end # class Changed
 
+    module NoChanges
       def empty?
         true
       end
@@ -59,11 +62,33 @@ module Statefully
       def changed
         {}
       end
+    end # module NoChanges
+    private_constant :NoChanges
+
+    class Unchanged
+      include Singleton
+      include NoChanges
 
       def inspect
-        "<#{self.class.name}>"
+        "#<#{self.class.name}>"
       end
-    end # class None
+    end # class Unchanged
+
+    class Failed
+      include NoChanges
+      attr_reader :error
+
+      def initialize(error)
+        @error = error
+      end
+
+      def inspect
+        "#<#{self.class.name} error=#{error.inspect}>"
+      end
+    end # class Failed
+
+    class Finished < Unchanged
+    end # class Finished
 
     class Change
       attr_reader :current, :previous
@@ -127,5 +152,5 @@ module Statefully
       end
     end # class Builder
     private_constant :Builder
-  end # class Diff
+  end # module Diff
 end # module Statefully

@@ -4,7 +4,7 @@ module Statefully
   describe State do
     describe '.create' do
       subject { described_class.create(key: 'val') }
-      it      { expect(subject).to be_success }
+      it      { expect(subject).to be_successful }
     end # describe '.create'
   end # describe State
 
@@ -31,13 +31,19 @@ module Statefully
 
     describe 'trivial readers' do
       it { expect(subject.resolve).to eq subject }
-      it { expect(subject).to be_success }
-      it { expect(subject).not_to be_failure }
+      it { expect(subject).to be_successful }
+      it { expect(subject).not_to be_failed }
       it { expect(subject).not_to be_finished }
     end # describe 'trivial readers'
 
+    describe '#inspect' do
+      let(:expected) { '#<Statefully::State::Success old_key="val">' }
+
+      it { expect(subject.inspect).to eq expected }
+    end # describe '#inspect'
+
     shared_examples 'successful_state' do
-      it { expect(next_state).to be_success }
+      it { expect(next_state).to be_successful }
       it { expect(next_state.old_key).to eq val }
 
       it { expect(next_state.previous).to eq subject }
@@ -64,11 +70,11 @@ module Statefully
     end # describe '#succeed'
 
     describe '#fail' do
-      let(:error)      { RuntimeError.new('snakes on a plane') }
+      let(:error)      { RuntimeError.new('boo!') }
       let(:next_state) { subject.fail(error) }
 
-      it { expect(next_state).not_to be_success }
-      it { expect(next_state).to be_failure }
+      it { expect(next_state).not_to be_successful }
+      it { expect(next_state).to be_failed }
       it { expect(next_state).not_to be_finished }
       it { expect(subject).not_to be_finished }
       it { expect(next_state.old_key).to eq val }
@@ -81,11 +87,19 @@ module Statefully
         end
       end
 
+      describe '#inspect' do
+        let(:inspect) { next_state.inspect }
+
+        it { expect(inspect).to start_with '#<Statefully::State::Failure' }
+        it { expect(inspect).to include 'old_key="val"' }
+        it { expect(inspect).to include 'error="#<RuntimeError: boo!>"' }
+      end # describe '#inspect'
+
       context 'with history' do
         let(:history) { next_state.history }
 
         it { expect(history.size).to eq 2 }
-        it { expect(history.first).to eq error }
+        it { expect(history.first.error).to eq error }
         it { expect(history.last.added).to include :old_key }
       end # context 'with history'
     end # describe '#fail'
@@ -102,7 +116,7 @@ module Statefully
         let(:history) { next_state.history }
 
         it { expect(history.size).to eq 2 }
-        it { expect(history.first).to eq :finished }
+        it { expect(history.first).to eq Diff::Finished.instance }
         it { expect(history.last.added).to include :old_key }
       end # context 'with history'
     end # describe '#finish'

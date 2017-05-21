@@ -27,7 +27,7 @@ steps:
 
   closing_comments:
     <<: *test_step
-    title: 'Cehck for closing comments'
+    title: 'Check for closing comments'
     commands:
       - bundle exec closing_comments
 

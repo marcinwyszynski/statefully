@@ -7,6 +7,12 @@ steps:
     type: build
     image_name: marcinwyszynski/statefully
 
+  spec:
+    title: 'Run RSpec'
+    image: ${{build_image}}
+    commands:
+      - bundle exec rspec
+
   deploy_to_rubygems:
     title: 'Deploy the gem to Rubygems'
     image: ${{build_image}}

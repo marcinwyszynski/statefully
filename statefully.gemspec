@@ -1,8 +1,11 @@
 # encoding: utf-8
 
+$LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
+require 'statefully/version'
+
 Gem::Specification.new do |spec|
   spec.name    = 'statefully'
-  spec.version = '0.1.4'
+  spec.version = Statefully::VERSION
 
   spec.author      = 'Marcin Wyszynski'
   spec.summary     = 'Immutable state with helpers to build awesome things'

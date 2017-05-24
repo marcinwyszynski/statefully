@@ -1,7 +1,6 @@
 # encoding: utf-8
 
-$LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
-require 'statefully/version'
+require_relative './lib/statefully/version'
 
 Gem::Specification.new do |spec|
   spec.name    = 'statefully'

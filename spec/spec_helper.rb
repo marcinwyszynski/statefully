@@ -3,10 +3,12 @@ Bundler.setup
 
 require 'pry'
 
-require 'simplecov'
-SimpleCov.start
+if ENV['CI'] == 'true'
+  require 'codecov'
+  require 'simplecov'
 
-require 'codecov'
-SimpleCov.formatter = SimpleCov::Formatter::Codecov
+  SimpleCov.start
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
 
 require 'statefully'

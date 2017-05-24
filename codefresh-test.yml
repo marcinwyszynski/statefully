@@ -31,6 +31,12 @@ steps:
     commands:
       - bundle exec closing_comments
 
+  yardstick:
+    <<: *test_step
+    title: 'Check for documentation completeness'
+    commands:
+      - bundle exec rake yardstick
+
   version:
     <<: *test_step
     title: 'Ensure version bump'

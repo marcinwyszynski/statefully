@@ -7,3 +7,11 @@ begin
 rescue LoadError
   puts 'RSpec not available'
 end
+
+task :yardstick do
+  require 'yardstick/rake/verify'
+
+  Yardstick::Rake::Verify
+    .new { |task| task.threshold = 100 }
+    .verify_measurements
+end

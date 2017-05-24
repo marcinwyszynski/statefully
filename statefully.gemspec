@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-require File.join(File.dirname(__FILE__), 'lib/statefully/version')
+$LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
+require 'statefully/version'
 
 Gem::Specification.new do |spec|
   spec.name    = 'statefully'

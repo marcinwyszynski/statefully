@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative './lib/statefully/version'
+require File.join(File.dirname(__FILE__), 'lib/statefully/version')
 
 Gem::Specification.new do |spec|
   spec.name    = 'statefully'

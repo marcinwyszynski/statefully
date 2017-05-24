@@ -35,7 +35,7 @@ steps:
     <<: *test_step
     title: 'Check for documentation completeness'
     commands:
-      - bundle exec yardstick
+      - bundle exec rake yardstick
 
   version:
     <<: *test_step

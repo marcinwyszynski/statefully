@@ -54,7 +54,7 @@ module Statefully
 
     # Hash of changed properties and their current and previous values
     #
-    # @return [Hash<Symbol, Statefully::Diff::Change>]
+    # @return [Hash<Symbol, Statefully::Change>]
     # @api public
     # @example
     #   Statefully::Diff::Unchanged.instance.added.changed

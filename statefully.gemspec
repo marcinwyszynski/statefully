@@ -7,11 +7,11 @@ Gem::Specification.new do |spec|
   spec.name    = 'statefully'
   spec.version = Statefully::VERSION
 
-  spec.author      = 'Marcin Wyszynski'
-  spec.summary     = 'Immutable state with helpers to build awesome things'
-  spec.description = spec.summary
-  spec.homepage    = 'https://github.com/marcinwyszynski/statefully'
-  spec.license     = 'MIT'
+  spec.author   = 'Marcin Wyszynski'
+  spec.email    = 'marcinw [at] gmx [dot] com'
+  spec.summary  = 'Immutable state with helpers to build awesome things'
+  spec.homepage = 'https://github.com/marcinwyszynski/statefully'
+  spec.license  = 'MIT'
 
   spec.files      = Dir['lib/**/*.rb'] + Dir['spec/**/*.rb']
   spec.test_files = spec.files.grep(/^spec/)
@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-rspec', '~> 1.15', '>= 1.15.1'
   spec.add_development_dependency 'simplecov', '~> 0.14', '>= 0.14.1'
   spec.add_development_dependency 'yard', '~> 0.9', '>= 0.9.9'
-  spec.add_development_dependency 'yardstick'
+  spec.add_development_dependency 'yardstick', '~> 0.9', '>= 0.9.9'
 
   spec.metadata['yard.run'] = 'yard'
 end # Gem::Specification

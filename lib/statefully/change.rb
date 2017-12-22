@@ -48,5 +48,5 @@ module Statefully
       "#<#{self.class.name} " \
       "#{Inspect.from_fields(current: current, previous: previous)}>"
     end
-  end # class Change
-end # module Statefully
+  end
+end

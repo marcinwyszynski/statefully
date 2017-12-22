@@ -194,7 +194,7 @@ module Statefully
       def inspect_changed
         changed.empty? ? nil : "changed=#{Inspect.from_hash(changed)}"
       end
-    end # class Changed
+    end
 
     module SingletonInspect
       # Human-readable representation of the {Diff} singleton
@@ -204,7 +204,7 @@ module Statefully
       def inspect
         "#<#{self.class.name}>"
       end
-    end # module SingletonInspect
+    end
     private_constant :SingletonInspect
 
     # {Created} represents a difference between a null and non-null {State}.
@@ -222,13 +222,13 @@ module Statefully
       def created?
         true
       end
-    end # class Created
+    end
 
     # {Unchanged} represents a lack of difference between two {State}s.
     class Unchanged < Diff
       include Singleton
       include SingletonInspect
-    end # class Unchanged
+    end
 
     # {Failed} represents a difference between a succesful and failed {State}.
     class Failed < Diff
@@ -262,13 +262,13 @@ module Statefully
       def inspect
         "#<#{self.class.name} error=#{error.inspect}>"
       end
-    end # class Failed
+    end
 
     # {Failed} represents a difference between a succesful and finished {State}.
     class Finished < Diff
       include Singleton
       include SingletonInspect
-    end # class Finished
+    end
 
     class Builder
       # Constructor for the {Builder} object
@@ -350,7 +350,7 @@ module Statefully
       def previous_keys
         Set.new(@previous.keys)
       end
-    end # class Builder
+    end
     private_constant :Builder
-  end # class Diff
-end # module Statefully
+  end
+end

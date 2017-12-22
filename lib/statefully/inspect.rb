@@ -20,6 +20,6 @@ module Statefully
       input.map { |key, val| "#{key}=#{val.inspect}" }.join(', ')
     end
     module_function :from_fields
-  end # module Inspect
+  end
   private_constant :Inspect
-end # module Statefully
+end

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
 require 'statefully/version'
 
@@ -17,7 +15,6 @@ Gem::Specification.new do |spec|
   spec.test_files = spec.files.grep(/^spec/)
 
   spec.add_development_dependency 'bundler', '~> 1.14', '>= 1.14.6'
-  spec.add_development_dependency 'closing_comments', '~> 0.1', '>= 0.1.1'
   spec.add_development_dependency 'codecov', '~> 0.1', '>= 0.1.10'
   spec.add_development_dependency 'ensure_version_bump', '~> 0.1'
   spec.add_development_dependency 'pry', '~> 0.10', '>= 0.10.4'
@@ -31,4 +28,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'yardstick', '~> 0.9', '>= 0.9.9'
 
   spec.metadata['yard.run'] = 'yard'
-end # Gem::Specification
+end

@@ -8,6 +8,6 @@ module Statefully
 
       it { expect(error.field).to eq field }
       it { expect(error.message).to eq "field 'bacon' missing from state" }
-    end # describe StateMissing
-  end # module Errors
-end # module Statefully
+    end
+  end
+end

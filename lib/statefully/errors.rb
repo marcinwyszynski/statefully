@@ -27,6 +27,7 @@ module Statefully
         @field = field
         super("field '#{field}' missing from state")
       end
-    end # class StateMissing
-  end # module Errors
-end # module Statefully
+    end
+  end
+end
+# rubocop:enable Metrics/LineLength

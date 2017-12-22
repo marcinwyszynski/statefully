@@ -1,4 +1,5 @@
 require 'forwardable'
+require 'securerandom'
 require 'singleton'
 
 # rubocop:disable Metrics/LineLength
@@ -66,7 +67,8 @@ module Statefully
     #   Statefully::State.create(key: 'val')
     #   => #<Statefully::State::Success key="val">
     def self.create(**values)
-      Success.send(:new, values, previous: None.instance).freeze
+      base = { correlation_id: SecureRandom.uuid }
+      Success.send(:new, base.merge(values), previous: None.instance).freeze
     end
 
     # Return a {Diff} between current and previous {State}
@@ -322,7 +324,7 @@ module Statefully
         @_members = {}.freeze
         @previous = self
       end
-    end # class None
+    end
 
     # {Success} is a not-yet failed {State}.
     class Success < State
@@ -362,7 +364,7 @@ module Statefully
       def finish
         Finished.send(:new, _members, previous: self).freeze
       end
-    end # class Success
+    end
 
     # {Failure} is a failed {State}.
     class Failure < State
@@ -444,7 +446,7 @@ module Statefully
       def inspect
         _inspect_details(error: error.inspect)
       end
-    end # class Failure
+    end
 
     # {Finished} state is a state which is successful, but should not be
     # processed any further. This could be useful for things like early returns.
@@ -476,6 +478,7 @@ module Statefully
       def finished?
         true
       end
-    end # class Finished
-  end # class State
-end # module Statefully
+    end
+  end
+end
+# rubocop:enable Metrics/LineLength

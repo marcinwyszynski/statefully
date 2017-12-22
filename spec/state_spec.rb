@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+require 'pry'
+
 module Statefully
   describe State do
     describe '.create' do
@@ -12,12 +14,12 @@ module Statefully
 
         context 'with diff' do
           let(:diff)     { state.diff }
-          let(:expected) { '#<Statefully::Diff::Created>' }
+          let(:expected) { '#<Statefully::Diff::Created' }
 
           it { expect(diff).to be_created }
-          it { expect(diff.inspect).to eq expected }
-        end # context 'with diff'
-      end # context 'without keyword arguments'
+          it { expect(diff.inspect).to start_with expected }
+        end
+      end
 
       context 'with keyword arguments' do
         let(:args) { { key: 'val' } }
@@ -27,51 +29,49 @@ module Statefully
           let(:expected) { '#<Statefully::Diff::Created added={key: "val"}>' }
 
           it { expect(diff).to be_created }
-          it { expect(diff.inspect).to eq expected }
-        end # context 'with diff'
-      end # context 'with keyword arguments'
-    end # describe '.create'
-  end # describe State
+          it { expect(diff.added).to include args }
+        end
+      end
+    end
+  end
 
   describe 'State::Success' do
     let(:val)   { 'val' }
     let(:state) { State.create(old_key: val) }
 
     describe 'methods delegated to the underlying Hash' do
-      it { expect(state.keys).to eq [:old_key] }
-      it { expect(state.key?(:old_key)).to be_truthy }
-      it { expect(state.any? { |_, value| value == val }).to be_truthy }
-    end # describe 'methods delegated to the underlying Hash'
+      it { expect(state.keys).to eq %i[correlation_id old_key] }
+      it { expect(state).to be_key(:old_key) }
+      it { expect(state).to(be_any { |_, value| value == val }) }
+    end
 
     describe "methods dynamically dispatched using 'method_missing'" do
       it { expect(state.old_key).to eq val }
-      it { expect(state.old_key?).to be_truthy }
+      it { expect(state).to be_old_key }
       it { expect(state.old_key!).to eq val }
 
       it { expect { state.new_key }.to raise_error NoMethodError }
-      it { expect(state.new_key?).to be_falsey }
+      it { expect(state).not_to be_new_key }
       it { expect { state.new_key! }.to raise_error Errors::StateMissing }
-    end # describe "methods dynamically dispatched using 'method_missing'"
+    end
 
     describe 'trivial readers' do
       it { expect(state.resolve).to eq state }
       it { expect(state).to be_successful }
       it { expect(state).not_to be_failed }
       it { expect(state).not_to be_finished }
-    end # describe 'trivial readers'
+    end
 
     describe 'history' do
       let(:history) { state.history }
 
       it { expect(history.length).to eq 1 }
       it { expect(history.first).to be_created }
-    end # describe 'history'
+    end
 
     describe '#inspect' do
-      let(:expected) { '#<Statefully::State::Success old_key="val">' }
-
-      it { expect(state.inspect).to eq expected }
-    end # describe '#inspect'
+      it { expect(state.inspect).to include 'old_key="val"' }
+    end
 
     shared_examples 'successful_state' do
       it { expect(next_state).to be_successful }
@@ -79,7 +79,7 @@ module Statefully
 
       it { expect(next_state.previous).to eq state }
       it { expect(next_state.resolve).to eq next_state }
-    end # shared_examples 'successful_state'
+    end
 
     describe '#succeed' do
       let(:new_val)    { 'new_val' }
@@ -89,7 +89,7 @@ module Statefully
 
       it { expect(next_state).not_to be_finished }
       it { expect(next_state.new_key).to eq new_val }
-      it { expect(next_state.keys).to eq %i[old_key new_key] }
+      it { expect(next_state.keys).to eq %i[correlation_id old_key new_key] }
 
       context 'with history' do
         let(:history) { next_state.history }
@@ -98,8 +98,8 @@ module Statefully
         it { expect(history.first).not_to be_created }
         it { expect(history.first.added).to include :new_key }
         it { expect(history.last.added).to include :old_key }
-      end # context 'with history'
-    end # describe '#succeed'
+      end
+    end
 
     describe '#fail' do
       let(:error)      { RuntimeError.new('boo!') }
@@ -120,7 +120,7 @@ module Statefully
         it { expect(inspect).to start_with '#<Statefully::State::Failure' }
         it { expect(inspect).to include 'old_key="val"' }
         it { expect(inspect).to include 'error="#<RuntimeError: boo!>"' }
-      end # describe '#inspect'
+      end
 
       context 'with history' do
         let(:history) { next_state.history }
@@ -128,8 +128,8 @@ module Statefully
         it { expect(history.size).to eq 2 }
         it { expect(history.first.error).to eq error }
         it { expect(history.last.added).to include :old_key }
-      end # context 'with history'
-    end # describe '#fail'
+      end
+    end
 
     describe '#finish' do
       let(:new_val)    { 'new_val' }
@@ -145,7 +145,7 @@ module Statefully
         it { expect(history.size).to eq 2 }
         it { expect(history.first).to eq Diff::Finished.instance }
         it { expect(history.last.added).to include :old_key }
-      end # context 'with history'
-    end # describe '#finish'
-  end # describe 'State::Success'
-end # module Statefully
+      end
+    end
+  end
+end

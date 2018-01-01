@@ -62,7 +62,15 @@ module Statefully
       it { expect(state).not_to be_finished }
     end
 
-    describe 'history' do
+    describe '#ancestry' do
+      let(:ancestry) { state.succeed.ancestry }
+
+      it { expect(ancestry.count).to eq 2 }
+      it { expect(ancestry.first).to eq state }
+      it { expect(ancestry.last).to be_none }
+    end
+
+    describe '#history' do
       let(:history) { state.history }
 
       it { expect(history.length).to eq 1 }

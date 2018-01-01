@@ -61,7 +61,7 @@ module Statefully
     #
     # @param values [Hash<Symbol, Object>] keyword arguments
     #
-    # @return [type] [description]
+    # @return [State::Success] new successful State
     # @api public
     # @example
     #   Statefully::State.create(key: 'val')
@@ -69,6 +69,17 @@ module Statefully
     def self.create(**values)
       base = { correlation_id: SecureRandom.uuid }
       Success.send(:new, base.merge(values), previous: None.instance).freeze
+    end
+
+    # Return all States that came before
+    #
+    # @return [Array<State>]
+    # @api public
+    # @example
+    #   state = Statefully::State.create
+    #   => [#<Statefully::State::None>]
+    def ancestry
+      [previous] + previous.ancestry
     end
 
     # Return a {Diff} between current and previous {State}
@@ -289,6 +300,17 @@ module Statefully
     # {None} is a null-value of {State}
     class None < State
       include Singleton
+
+      # Base case - {None} state does not have any ancestry
+      #
+      # @return [Array<State>]
+      # @api public
+      # @example
+      #   Statefully::State::None.instance.ancestry
+      #   => []
+      def ancestry
+        []
+      end
 
       # Return all historical changes to this {State}
       #
